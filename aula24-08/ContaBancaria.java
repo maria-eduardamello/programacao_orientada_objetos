@@ -1,89 +1,114 @@
 import java.util.ArrayList;
 
 public class ContaBancaria {
+
     private Titular titular;
 
-    private double saldo;
-    private int operacoes;
+    protected double saldo;
+    protected ArrayList<Double> movimentacoes;
 
-    private ArrayList<Double> movimentacoes;
-
-
-    ContaBancaria(Titular nome, double saldoInicial) {
-        this.titular = nome;
-        this.saldo = saldoInicial;
-        this.operacoes = 0;
+    ContaBancaria(Titular titular) {
+        this.titular = titular;
+        this.saldo = 0;
         this.movimentacoes = new ArrayList<>();
-        
     }
 
-
-    void depositar(double valor) {
-        if (valor > 0){
-            saldo += valor;
-            System.out.println("\nDeposito concluido!");
-            movimentacoes.add(valor);
-            operacoes ++;
-        }else{
-            System.out.println("Deposite um saldo positivo!");
-        }
-    }
-    void sacar(double valor) {
-        valor += 0.50;
-        if (valor > 0 && saldo >= valor) {
-            saldo -= valor;
-            System.out.println("\nSaque concluido!");
-            movimentacoes.add((-valor));
-            operacoes ++;
-        } else {
-            System.out.println("\nSaque Invalido - Valor Exedido");
-        }
-    }
-
-
-    void aplicarPercentual(double percentual){
-        if (percentual >= 0 && percentual <= 100){
-            double valor = saldo + (saldo*(percentual/100));
-            System.out.println("\nSeu percentual de: "+percentual+"% é de: "+valor+" baseado no seu saldo atual!");
-        } else {
-            System.out.println("\nValor de percentual invalido!");
-        }
+    public Titular getTitular() {
+        return titular;
     }
 
     public double getSaldo() {
-        return this.saldo;
-    }   
-    
-    public int getOperacoes() {
-        return this.operacoes;
-
+        return saldo;
     }
 
-    public String getNome() {
-        return titular.getTitular();
+    public int getOperacoes() {
+        return movimentacoes.size();
+    }
+
+    void setTitular(String novo) {
+        if (novo != null && !novo.trim().isEmpty()) {
+            titular.setTitular(novo);
+        } else {
+            System.out.println("Nome do titular nao pode ser vazio!");
+        }
+    }
+
+    void depositar(double valor) {
+
+        if (valor > 0) {
+            saldo += valor;
+            movimentacoes.add(valor);
+
+            System.out.println("Deposito concluido!");
+        } else {
+            System.out.println("Valor de deposito invalido!");
+        }
+    }
+
+    void sacar(double valor) {
+
+        if (valor <= 0) {
+            System.out.println("Valor de saque invalido!");
+            return;
+        }
+
+        if (saldo >= valor) {
+            saldo -= valor;
+            movimentacoes.add(-valor);
+
+            System.out.println("Saque concluido!");
+        } else {
+            System.out.println("Saldo insuficiente!");
+        }
     }
 
     public void exibirExtrato() {
-        System.out.println("\nUltimas movimentações: ");
+
+        System.out.println("\nExtrato:");
+
+        if (movimentacoes.isEmpty()) {
+            System.out.println("Nenhuma movimentacao realizada.");
+            return;
+        }
+
         for (Double movimentacao : movimentacoes) {
-            System.out.println(movimentacao);
-    }}
+            System.out.println("R$ " + movimentacao);
+        }
+    }
 
     public void totalDepositado() {
-        Double soma = 0.0;
+
+        double soma = 0;
+
         for (Double movimentacao : movimentacoes) {
             if (movimentacao > 0) {
                 soma += movimentacao;
-            }}
-        System.out.print("\nTotal depositado no mês: "+soma);
+            }
+        }
+
+        System.out.println("Total depositado: R$ " + soma);
     }
 
     public void maiorSaque() {
-        Double maior = 0.0;
+
+        double maior = 0;
+
         for (Double movimentacao : movimentacoes) {
-            if (movimentacao < maior){
-                maior = movimentacao;
-            }}
-        System.out.println("\nSaque maior de: "+maior);
+
+            if (movimentacao < 0) {
+
+                double saque = movimentacao * -1;
+
+                if (saque > maior) {
+                    maior = saque;
+                }
+            }
+        }
+
+        if (maior > 0) {
+            System.out.println("Maior saque: R$ " + maior);
+        } else {
+            System.out.println("Nenhum saque realizado.");
+        }
     }
 }
